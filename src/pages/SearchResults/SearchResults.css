@@ -1,0 +1,10 @@
+/* Search Results Page Styles */
+.search-results {
+  width: 100%;
+}
+
+.search-results-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}

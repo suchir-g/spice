@@ -1,0 +1,11 @@
+/* App Component Styles */
+.App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Ensure the app takes full height */
+#root {
+  min-height: 100vh;
+}
