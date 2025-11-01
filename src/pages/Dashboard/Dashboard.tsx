@@ -1,30 +1,141 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Video } from '../../types/index';
 import VideoCard from '../../components/VideoCard/VideoCard';
 import { videoService } from '../../services/videoService';
-import { ChevronDownIcon } from '@heroicons/react/24/solid';
+import { 
+  ChevronDownIcon, 
+  MagnifyingGlassIcon,
+  FunnelIcon,
+  XMarkIcon
+} from '@heroicons/react/24/solid';
 import './Dashboard.css';
 
 type SortOption = 'spice' | 'recent' | 'recommended';
+
+interface FilterState {
+  searchQuery: string;
+  selectedTags: string[];
+  selectedProfessors: string[];
+  selectedCourses: string[];
+  minSpiceLevel: number;
+  maxSpiceLevel: number;
+}
 
 const Dashboard: React.FC = () => {
   const [videos, setVideos] = useState<Video[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<SortOption>('spice');
+  const [filteredVideos, setFilteredVideos] = useState<Video[]>([]);
+  const [showFilters, setShowFilters] = useState(false);
+  const [expandedSections, setExpandedSections] = useState<{
+    tags: boolean;
+    professors: boolean;
+    courses: boolean;
+  }>({
+    tags: false,
+    professors: false,
+    courses: false
+  });
+  const [filters, setFilters] = useState<FilterState>({
+    searchQuery: '',
+    selectedTags: [],
+    selectedProfessors: [],
+    selectedCourses: [],
+    minSpiceLevel: 0,
+    maxSpiceLevel: 5
+  });
+
+  // Extract unique values for filter options
+  const filterOptions = useMemo(() => {
+    const tags = new Set<string>();
+    const professors = new Set<string>();
+    const courses = new Set<string>();
+
+    videos.forEach(video => {
+      if (video.tags) {
+        video.tags.forEach(tag => tags.add(tag));
+      }
+      professors.add(video.lecturer);
+      courses.add(video.course);
+    });
+
+    return {
+      tags: Array.from(tags).sort(),
+      professors: Array.from(professors).sort(),
+      courses: Array.from(courses).sort()
+    };
+  }, [videos]);
+
+  const calculateSpiceScore = (video: Video) => {
+    const userRatingAverage = (
+      video.averageRating.difficulty + 
+      video.averageRating.importance + 
+      video.averageRating.clarity + 
+      video.averageRating.usefulness
+    ) / 4;
+    
+    // TODO: Replace with actual machine learning rating
+    const machineRating = 3.5;
+    
+    return (userRatingAverage * 0.7) + (machineRating * 0.3);
+  };
+
+  const calculateRecommendedScore = (video: Video) => {
+    // Recommended focuses more on practical value for students
+    return (
+      video.averageRating.importance * 0.4 +     // How crucial is this content?
+      video.averageRating.usefulness * 0.3 +     // How applicable is it?
+      video.averageRating.clarity * 0.2 +        // How well is it explained?
+      video.averageRating.difficulty * 0.1       // Lower weight for difficulty
+    );
+  };
+
+  const filterVideos = (videos: Video[]) => {
+    return videos.filter(video => {
+      // Text search
+      const searchLower = filters.searchQuery.toLowerCase();
+      const matchesSearch = 
+        filters.searchQuery === '' ||
+        video.title.toLowerCase().includes(searchLower) ||
+        video.description.toLowerCase().includes(searchLower) ||
+        video.lecturer.toLowerCase().includes(searchLower) ||
+        video.course.toLowerCase().includes(searchLower) ||
+        (video.tags && video.tags.some(tag => tag.toLowerCase().includes(searchLower)));
+
+      // Tag filtering
+      const matchesTags = 
+        filters.selectedTags.length === 0 ||
+        (video.tags && filters.selectedTags.every(tag => video.tags.includes(tag)));
+
+      // Professor filtering
+      const matchesProfessor = 
+        filters.selectedProfessors.length === 0 ||
+        filters.selectedProfessors.includes(video.lecturer);
+
+      // Course filtering
+      const matchesCourse = 
+        filters.selectedCourses.length === 0 ||
+        filters.selectedCourses.includes(video.course);
+
+      // Spice level filtering
+      const videoSpice = calculateSpiceScore(video);
+      const matchesSpiceLevel = 
+        videoSpice >= filters.minSpiceLevel && 
+        videoSpice <= filters.maxSpiceLevel;
+
+      return matchesSearch && matchesTags && matchesProfessor && 
+             matchesCourse && matchesSpiceLevel;
+    });
+  };
 
   const sortVideos = (videos: Video[], sortOption: SortOption) => {
     const sortedVideos = [...videos];
     
     switch (sortOption) {
       case 'spice':
-        sortedVideos.sort((a, b) => {
-          const aSpice = (a.averageRating.difficulty + a.averageRating.importance + 
-                         a.averageRating.clarity + a.averageRating.usefulness) / 4;
-          const bSpice = (b.averageRating.difficulty + b.averageRating.importance + 
-                         b.averageRating.clarity + b.averageRating.usefulness) / 4;
-          return bSpice - aSpice;
-        });
+        // Spice is about overall intensity and challenge
+        sortedVideos.sort((a, b) => calculateSpiceScore(b) - calculateSpiceScore(a));
         break;
       case 'recent':
         sortedVideos.sort((a, b) => 
@@ -32,28 +143,26 @@ const Dashboard: React.FC = () => {
         );
         break;
       case 'recommended':
-        sortedVideos.sort((a, b) => {
-          const aScore = (a.averageRating.importance * 2 + a.averageRating.clarity + 
-                         a.averageRating.usefulness * 1.5) / 4.5;
-          const bScore = (b.averageRating.importance * 2 + b.averageRating.clarity + 
-                         b.averageRating.usefulness * 1.5) / 4.5;
-          return bScore - aScore;
-        });
+        // Recommended is about practical value and accessibility
+        sortedVideos.sort((a, b) => calculateRecommendedScore(b) - calculateRecommendedScore(a));
         break;
     }
     
-    setVideos(sortedVideos);
+    return sortedVideos;
   };
 
   useEffect(() => {
     loadVideos();
   }, []);
 
+  // Apply filters and sorting whenever filters or sort option changes
   useEffect(() => {
     if (videos.length > 0) {
-      sortVideos(videos, sortBy);
+      const filtered = filterVideos(videos);
+      const sorted = sortVideos(filtered, sortBy);
+      setFilteredVideos(sorted);
     }
-  }, [sortBy]);
+  }, [filters, sortBy, videos]);
 
   const loadVideos = async () => {
     try {
@@ -66,7 +175,9 @@ const Dashboard: React.FC = () => {
         setError('No videos found.');
       } else {
         setVideos(result.videos);
-        sortVideos(result.videos, sortBy);
+        const filtered = filterVideos(result.videos);
+        const sorted = sortVideos(filtered, sortBy);
+        setFilteredVideos(sorted);
       }
     } catch (error) {
       console.error('Error loading videos:', error);
@@ -85,19 +196,182 @@ const Dashboard: React.FC = () => {
             Spice for Panopto - rate your lectures and figure out which lectures you <b>definitely</b> can't miss.
           </p>
         </div>
-        <div className="sort-controls">
-          <select 
-            value={sortBy} 
-            onChange={(e) => setSortBy(e.target.value as SortOption)}
-            className="sort-select"
+        
+        <div className="dashboard-controls">
+          <div className="search-bar">
+            <MagnifyingGlassIcon className="search-icon" />
+            <input
+              type="text"
+              placeholder="Search videos..."
+              value={filters.searchQuery}
+              onChange={(e) => {
+                const value = e.target.value.trim();
+                setFilters(prev => ({...prev, searchQuery: value}));
+              }}
+              className="search-input"
+            />
+          </div>
+
+          <button 
+            className="filter-toggle"
+            onClick={() => setShowFilters(!showFilters)}
           >
-            <option value="spice">Sort by Spice Level</option>
-            <option value="recent">Sort by Recent</option>
-            <option value="recommended">Sort by Recommended</option>
-          </select>
-          <ChevronDownIcon className="sort-icon" />
+            <FunnelIcon className="filter-icon" />
+            {filters.selectedTags.length > 0 || 
+             filters.selectedProfessors.length > 0 || 
+             filters.selectedCourses.length > 0 ? (
+              <span className="filter-count">
+                {filters.selectedTags.length + 
+                 filters.selectedProfessors.length + 
+                 filters.selectedCourses.length}
+              </span>
+            ) : null}
+          </button>
+
+          <div className="sort-controls">
+            <select 
+              value={sortBy} 
+              onChange={(e) => setSortBy(e.target.value as SortOption)}
+              className="sort-select"
+            >
+              <option value="spice">Sort by Spice Level</option>
+              <option value="recent">Sort by Recent</option>
+              <option value="recommended">Sort by Recommended</option>
+            </select>
+            <ChevronDownIcon className="sort-icon" />
+          </div>
         </div>
       </div>
+
+      {showFilters && (
+        <div className="filter-panel">
+          <div className="filter-section">
+            <h3>Tags</h3>
+            <div className="tag-list">
+              {(expandedSections.tags ? filterOptions.tags : filterOptions.tags.slice(0, 8)).map(tag => (
+                <button
+                  key={tag}
+                  className={`tag-button ${filters.selectedTags.includes(tag) ? 'selected' : ''}`}
+                  onClick={() => {
+                    const newTags = filters.selectedTags.includes(tag)
+                      ? filters.selectedTags.filter(t => t !== tag)
+                      : [...filters.selectedTags, tag];
+                    setFilters({...filters, selectedTags: newTags});
+                  }}
+                >
+                  {tag}
+                </button>
+              ))}
+              {filterOptions.tags.length > 8 && (
+                <button
+                  className="show-more-button"
+                  onClick={() => setExpandedSections(prev => ({...prev, tags: !prev.tags}))}
+                >
+                  {expandedSections.tags ? 'Show Less' : `+${filterOptions.tags.length - 8} More`}
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="filter-section">
+            <h3>Professors</h3>
+            <div className="professor-list">
+              {(expandedSections.professors ? filterOptions.professors : filterOptions.professors.slice(0, 6)).map(professor => (
+                <button
+                  key={professor}
+                  className={`professor-button ${filters.selectedProfessors.includes(professor) ? 'selected' : ''}`}
+                  onClick={() => {
+                    const newProfessors = filters.selectedProfessors.includes(professor)
+                      ? filters.selectedProfessors.filter(p => p !== professor)
+                      : [...filters.selectedProfessors, professor];
+                    setFilters({...filters, selectedProfessors: newProfessors});
+                  }}
+                >
+                  {professor}
+                </button>
+              ))}
+              {filterOptions.professors.length > 6 && (
+                <button
+                  className="show-more-button"
+                  onClick={() => setExpandedSections(prev => ({...prev, professors: !prev.professors}))}
+                >
+                  {expandedSections.professors ? 'Show Less' : `+${filterOptions.professors.length - 6} More`}
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="filter-section">
+            <h3>Courses</h3>
+            <div className="course-list">
+              {(expandedSections.courses ? filterOptions.courses : filterOptions.courses.slice(0, 6)).map(course => (
+                <button
+                  key={course}
+                  className={`course-button ${filters.selectedCourses.includes(course) ? 'selected' : ''}`}
+                  onClick={() => {
+                    const newCourses = filters.selectedCourses.includes(course)
+                      ? filters.selectedCourses.filter(c => c !== course)
+                      : [...filters.selectedCourses, course];
+                    setFilters({...filters, selectedCourses: newCourses});
+                  }}
+                >
+                  {course}
+                </button>
+              ))}
+              {filterOptions.courses.length > 6 && (
+                <button
+                  className="show-more-button"
+                  onClick={() => setExpandedSections(prev => ({...prev, courses: !prev.courses}))}
+                >
+                  {expandedSections.courses ? 'Show Less' : `+${filterOptions.courses.length - 6} More`}
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="filter-section">
+            <h3>Spice Level</h3>
+            <div className="spice-range">
+              <input
+                type="range"
+                min="0"
+                max="5"
+                step="0.5"
+                value={filters.minSpiceLevel}
+                onChange={(e) => setFilters({...filters, minSpiceLevel: parseFloat(e.target.value)})}
+              />
+              <input
+                type="range"
+                min="0"
+                max="5"
+                step="0.5"
+                value={filters.maxSpiceLevel}
+                onChange={(e) => setFilters({...filters, maxSpiceLevel: parseFloat(e.target.value)})}
+              />
+              <div className="spice-range-labels">
+                <span>{filters.minSpiceLevel.toFixed(1)}</span>
+                <span>to</span>
+                <span>{filters.maxSpiceLevel.toFixed(1)}</span>
+              </div>
+            </div>
+          </div>
+
+          <button 
+            className="clear-filters"
+            onClick={() => setFilters({
+              searchQuery: '',
+              selectedTags: [],
+              selectedProfessors: [],
+              selectedCourses: [],
+              minSpiceLevel: 0,
+              maxSpiceLevel: 5
+            })}
+          >
+            <XMarkIcon className="clear-icon" />
+            Clear Filters
+          </button>
+        </div>
+      )}
 
       {loading && (
         <div className="loading-state">
@@ -116,7 +390,7 @@ const Dashboard: React.FC = () => {
 
       {!loading && !error && (
         <div className="video-grid">
-          {videos.map((video, index) => (
+          {filteredVideos.map((video, index) => (
             <VideoCard 
               key={video.id} 
               video={video} 
@@ -127,7 +401,7 @@ const Dashboard: React.FC = () => {
         </div>
       )}
 
-      {!loading && videos.length === 0 && !error && (
+      {!loading && filteredVideos.length === 0 && !error && (
         <div className="empty-state">
           <p>No videos found.</p>
         </div>

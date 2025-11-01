@@ -16,11 +16,20 @@ const VideoCard: React.FC<VideoCardProps & { style?: React.CSSProperties; varian
   style,
   variant = 'dashboard'
 }) => {
+  // Combine user ratings and machine rating
+  const userRatingAverage = (
+    video.averageRating.difficulty + 
+    video.averageRating.importance + 
+    video.averageRating.clarity + 
+    video.averageRating.usefulness
+  ) / 4;
+  
+  // TODO: Replace this with actual machine learning rating
+  const machineRating = 3.5; // Placeholder machine-generated rating
+  
+  // Weighted combination: 70% user ratings, 30% machine rating
   const averageSpiceLevel = Math.round(
-    (video.averageRating.difficulty + 
-     video.averageRating.importance + 
-     video.averageRating.clarity + 
-     video.averageRating.usefulness) / 4
+    (userRatingAverage * 0.7) + (machineRating * 0.3)
   );
 
   if (variant === 'dashboard') {
