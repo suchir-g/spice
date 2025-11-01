@@ -1,0 +1,67 @@
+/* Theme Color System */
+:root {
+  /* Default Theme - Yellow */
+  --primary-color: #ffdc6a;
+  --primary-color-rgb: 255, 220, 106;
+  --primary-dark: #f5d042;
+  --primary-darker: #e6c035;
+  
+  /* Derived colors with opacity variations */
+  --primary-10: rgba(var(--primary-color-rgb), 0.1);
+  --primary-15: rgba(var(--primary-color-rgb), 0.15);
+  --primary-20: rgba(var(--primary-color-rgb), 0.2);
+  --primary-30: rgba(var(--primary-color-rgb), 0.3);
+  --primary-40: rgba(var(--primary-color-rgb), 0.4);
+  --primary-70: rgba(var(--primary-color-rgb), 0.7);
+  --primary-80: rgba(var(--primary-color-rgb), 0.8);
+  --primary-90: rgba(var(--primary-color-rgb), 0.9);
+  --primary-95: rgba(var(--primary-color-rgb), 0.95);
+}
+
+/* Orange Theme */
+[data-theme="orange"] {
+  --primary-color: #f59e0b;
+  --primary-color-rgb: 245, 158, 11;
+  --primary-dark: #d97706;
+  --primary-darker: #b45309;
+}
+
+/* Blue Theme */
+[data-theme="blue"] {
+  --primary-color: #3b82f6;
+  --primary-color-rgb: 59, 130, 246;
+  --primary-dark: #2563eb;
+  --primary-darker: #1d4ed8;
+}
+
+/* Green Theme */
+[data-theme="green"] {
+  --primary-color: #10b981;
+  --primary-color-rgb: 16, 185, 129;
+  --primary-dark: #059669;
+  --primary-darker: #047857;
+}
+
+/* Purple Theme */
+[data-theme="purple"] {
+  --primary-color: #8b5cf6;
+  --primary-color-rgb: 139, 92, 246;
+  --primary-dark: #7c3aed;
+  --primary-darker: #6d28d9;
+}
+
+/* Pink Theme */
+[data-theme="pink"] {
+  --primary-color: #ec4899;
+  --primary-color-rgb: 236, 72, 153;
+  --primary-dark: #db2777;
+  --primary-darker: #be185d;
+}
+
+/* Red Theme */
+[data-theme="red"] {
+  --primary-color: #ef4444;
+  --primary-color-rgb: 239, 68, 68;
+  --primary-dark: #dc2626;
+  --primary-darker: #b91c1c;
+}

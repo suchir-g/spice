@@ -27,6 +27,12 @@ const VideoDetails: React.FC = () => {
   const [newComment, setNewComment] = useState('');
   const [userRating, setUserRating] = useState<Rating | null>(null);
   const [showRatingForm, setShowRatingForm] = useState(false);
+  const [formRating, setFormRating] = useState<Rating>({
+    difficulty: 0,
+    importance: 0,
+    clarity: 0,
+    usefulness: 0
+  });
 
   useEffect(() => {
     if (videoId) {
@@ -145,18 +151,25 @@ const VideoDetails: React.FC = () => {
     setNewComment('');
   };
 
-  const handleRateVideo = async (rating: Rating) => {
+  const handleRateVideo = async () => {
     if (!videoId) return;
     
     try {
-      await videoService.rateVideo(videoId, rating);
-      setUserRating(rating);
+      await videoService.rateVideo(videoId, formRating);
+      setUserRating(formRating);
       setShowRatingForm(false);
       // Reload video to get updated ratings
       loadVideoDetails();
     } catch (error) {
       console.error('Error rating video:', error);
     }
+  };
+
+  const updateFormRating = (category: keyof Rating, value: number) => {
+    setFormRating(prev => ({
+      ...prev,
+      [category]: value
+    }));
   };
 
   const getPanoptoUrl = () => {
@@ -278,7 +291,18 @@ const VideoDetails: React.FC = () => {
               <div className="rating-summary">
                 <p>{video.totalRatings} total ratings</p>
                 <button 
-                  onClick={() => setShowRatingForm(!showRatingForm)}
+                  onClick={() => {
+                    setShowRatingForm(!showRatingForm);
+                    if (!showRatingForm) {
+                      // Reset form when opening
+                      setFormRating({
+                        difficulty: 0,
+                        importance: 0,
+                        clarity: 0,
+                        usefulness: 0
+                      });
+                    }
+                  }}
                   className="rate-button"
                 >
                   <StarIcon className="icon" />
@@ -290,15 +314,48 @@ const VideoDetails: React.FC = () => {
               {showRatingForm && (
                 <div className="rating-form">
                   <h4>Rate this video</h4>
-                  {/* Rating form implementation would go here */}
+                  <div className="rating-categories">
+                    <div className="rating-category">
+                      <span className="category-label">Difficulty</span>
+                      <SpiceRating 
+                        value={formRating.difficulty} 
+                        onChange={(value) => updateFormRating('difficulty', value)}
+                        size="sm"
+                      />
+                    </div>
+                    <div className="rating-category">
+                      <span className="category-label">Importance</span>
+                      <SpiceRating 
+                        value={formRating.importance} 
+                        onChange={(value) => updateFormRating('importance', value)}
+                        size="sm"
+                      />
+                    </div>
+                    <div className="rating-category">
+                      <span className="category-label">Clarity</span>
+                      <SpiceRating 
+                        value={formRating.clarity} 
+                        onChange={(value) => updateFormRating('clarity', value)}
+                        size="sm"
+                      />
+                    </div>
+                    <div className="rating-category">
+                      <span className="category-label">Usefulness</span>
+                      <SpiceRating 
+                        value={formRating.usefulness} 
+                        onChange={(value) => updateFormRating('usefulness', value)}
+                        size="sm"
+                      />
+                    </div>
+                  </div>
                   <div className="rating-form-actions">
                     <button onClick={() => setShowRatingForm(false)}>Cancel</button>
-                    <button onClick={() => handleRateVideo({
-                      difficulty: 4,
-                      importance: 4,
-                      clarity: 4,
-                      usefulness: 4
-                    })}>Submit Rating</button>
+                    <button 
+                      onClick={handleRateVideo}
+                      disabled={formRating.difficulty === 0 || formRating.importance === 0 || formRating.clarity === 0 || formRating.usefulness === 0}
+                    >
+                      Submit Rating
+                    </button>
                   </div>
                 </div>
               )}
