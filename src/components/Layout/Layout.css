@@ -25,6 +25,12 @@
   height: 4rem;
 }
 
+.navbar-menu-desktop {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
 .navbar-mobile-button {
   display: none;
 }
@@ -67,11 +73,11 @@
 .brand-text {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--primary-color);
+  color: #ffffff;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  text-shadow: 0 2px 10px var(--primary-40);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .navbar-menu-desktop {

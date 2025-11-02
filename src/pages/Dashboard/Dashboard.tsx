@@ -191,9 +191,10 @@ const Dashboard: React.FC = () => {
     <div className="dashboard">
       <div className="dashboard-header">
         <div className="dashboard-title-group">
-          <h1 className="dashboard-title">Dashboard</h1>
+          <h1 className="dashboard-title">All Videos</h1>
           <p className="dashboard-subtitle">
-            Spice for Panopto - rate your lectures and figure out which lectures you <b>definitely</b> can't miss.
+            Our algorithms analyze ratings and engagement to highlight the lectures you <b>can't afford to miss</b>. 
+            Sorted by our <b>spice score</b> to prioritize the most impactful content.
           </p>
         </div>
         

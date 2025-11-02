@@ -1,10 +1,10 @@
 /* Theme Color System */
 :root {
-  /* Default Theme - Yellow */
-  --primary-color: #ffdc6a;
-  --primary-color-rgb: 255, 220, 106;
-  --primary-dark: #f5d042;
-  --primary-darker: #e6c035;
+  /* Default Theme - Blue */
+  --primary-color: #3b82f6;
+  --primary-color-rgb: 59, 130, 246;
+  --primary-dark: #2563eb;
+  --primary-darker: #1d4ed8;
   
   /* Derived colors with opacity variations */
   --primary-10: rgba(var(--primary-color-rgb), 0.1);
@@ -26,12 +26,12 @@
   --primary-darker: #b45309;
 }
 
-/* Blue Theme */
-[data-theme="blue"] {
-  --primary-color: #3b82f6;
-  --primary-color-rgb: 59, 130, 246;
-  --primary-dark: #2563eb;
-  --primary-darker: #1d4ed8;
+/* Yellow Theme */
+[data-theme="yellow"] {
+  --primary-color: #ffdc6a;
+  --primary-color-rgb: 255, 220, 106;
+  --primary-dark: #f5d042;
+  --primary-darker: #e6c035;
 }
 
 /* Green Theme */

@@ -16,8 +16,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <div className="navbar-content">
             <div className="navbar-brand">
               <Link to="/" className="brand-link">
-                <span className="brand-text">🌶️ Spice</span>
+                <span className="brand-text">spice 🌶️</span>
               </Link>
+            </div>
+            <div className="navbar-menu-desktop">
+              <div className="nav-links">
+                <Link to="/dashboard" className="nav-link-base nav-link">
+                  Videos
+                </Link>
+              </div>
             </div>
             <div className="navbar-actions">
               <ThemeSwitcher />

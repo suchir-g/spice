@@ -41,13 +41,20 @@ const VideoCard: React.FC<VideoCardProps & { style?: React.CSSProperties; varian
       >
         <Link to={`/video/${video.id}`} className="card-content">
           <div className="thumbnail">
+            <img src="/mock-thumbail.jpg" alt={video.title} className="thumbnail-image" />
             <PlayIcon className="play-icon" />
           </div>
           
           <div className="info">
             <div className="title-row">
               <h3>{video.title}</h3>
-              <SpiceRating value={averageSpiceLevel} readonly size="sm" />
+              <SpiceRating 
+                value={averageSpiceLevel} 
+                readonly 
+                size="sm"
+                userScore={userRatingAverage}
+                machineScore={machineRating}
+              />
             </div>
             <p className="description">{video.description}</p>
             <div className="metadata">
@@ -68,9 +75,8 @@ const VideoCard: React.FC<VideoCardProps & { style?: React.CSSProperties; varian
     <div className="detail-video-card" style={style}>
       <div className="video-thumbnail">
         <Link to={`/video/${video.id}`}>
-          <div className="thumbnail-placeholder">
-            <PlayIcon className="play-icon" />
-          </div>
+          <img src="/mock-thumbail.jpg" alt={video.title} className="thumbnail-image" />
+          <PlayIcon className="play-icon" />
         </Link>
       </div>
 
@@ -79,7 +85,13 @@ const VideoCard: React.FC<VideoCardProps & { style?: React.CSSProperties; varian
           <Link to={`/video/${video.id}`} className="video-title-link">
             <h3 className="video-title">{video.title}</h3>
           </Link>
-          <SpiceRating value={averageSpiceLevel} readonly size="sm" />
+          <SpiceRating 
+            value={averageSpiceLevel} 
+            readonly 
+            size="sm" 
+            userScore={userRatingAverage}
+            machineScore={machineRating}
+          />
         </div>
 
         <p className="video-description">{video.description}</p>

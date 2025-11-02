@@ -79,9 +79,22 @@
 .dashboard-video-card .thumbnail {
   width: 100%;
   padding-top: 56.25%; /* 16:9 aspect ratio */
-  background: rgba(0, 0, 0, 0.2);
   position: relative;
   overflow: hidden;
+}
+
+.dashboard-video-card .thumbnail-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.dashboard-video-card:hover .thumbnail-image {
+  transform: scale(1.05);
 }
 
 .dashboard-video-card .play-icon {
@@ -108,12 +121,19 @@
   width: 320px;
   min-width: 320px;
   height: 180px;
-  background: rgba(0, 0, 0, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   position: relative;
   overflow: hidden;
+}
+
+.detail-video-card .thumbnail-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.detail-video-card:hover .thumbnail-image {
+  transform: scale(1.05);
 }
 
 .detail-video-card .thumbnail-placeholder {

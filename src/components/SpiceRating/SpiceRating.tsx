@@ -2,12 +2,19 @@ import React from 'react';
 import { SpiceRatingProps } from '../../types/index';
 import './SpiceRating.css';
 
-const SpiceRating: React.FC<SpiceRatingProps> = ({ 
+interface ExtendedSpiceRatingProps extends SpiceRatingProps {
+  userScore?: number;
+  machineScore?: number;
+}
+
+const SpiceRating: React.FC<ExtendedSpiceRatingProps> = ({ 
   value, 
   onChange, 
   readonly = false, 
   size = 'md', 
-  label 
+  label,
+  userScore,
+  machineScore
 }) => {
   const handleClick = (rating: number) => {
     if (!readonly && onChange) {
@@ -34,7 +41,13 @@ const SpiceRating: React.FC<SpiceRatingProps> = ({
   };
 
   return (
-    <div className="spice-rating">
+    <div className="spice-rating" title={
+      userScore && machineScore
+        ? `Spice Score: ${value}
+User Rating: ${userScore.toFixed(1)}
+AI Rating: ${machineScore.toFixed(1)}`
+        : undefined
+    }>
       {label && <span className="rating-label">{label}</span>}
       <div className="peppers-container">
         {Array.from({ length: 5 }, (_, index) => renderPepper(index))}
@@ -43,6 +56,24 @@ const SpiceRating: React.FC<SpiceRatingProps> = ({
         <span className="rating-value" aria-live="polite">
           {value}/5
         </span>
+      )}
+      {userScore && machineScore && (
+        <div className="score-tooltip">
+          <div className="score-breakdown">
+            <div className="score-row">
+              <span>Final Score:</span>
+              <strong>{value.toFixed(1)}</strong>
+            </div>
+            <div className="score-row">
+              <span>User Rating:</span>
+              <span>{userScore.toFixed(1)}</span>
+            </div>
+            <div className="score-row">
+              <span>AI Rating:</span>
+              <span>{machineScore.toFixed(1)}</span>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
