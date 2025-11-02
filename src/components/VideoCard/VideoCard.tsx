@@ -48,13 +48,15 @@ const VideoCard: React.FC<VideoCardProps & { style?: React.CSSProperties; varian
           <div className="info">
             <div className="title-row">
               <h3>{video.title}</h3>
-              <SpiceRating 
-                value={averageSpiceLevel} 
-                readonly 
-                size="sm"
-                userScore={userRatingAverage}
-                machineScore={machineRating}
-              />
+              {video.totalRatings > 0 && (
+                <SpiceRating 
+                  value={averageSpiceLevel} 
+                  readonly 
+                  size="sm"
+                  userScore={userRatingAverage}
+                  machineScore={machineRating}
+                />
+              )}
             </div>
             <p className="description">{video.description}</p>
             <div className="metadata">
@@ -85,13 +87,15 @@ const VideoCard: React.FC<VideoCardProps & { style?: React.CSSProperties; varian
           <Link to={`/video/${video.id}`} className="video-title-link">
             <h3 className="video-title">{video.title}</h3>
           </Link>
-          <SpiceRating 
-            value={averageSpiceLevel} 
-            readonly 
-            size="sm" 
-            userScore={userRatingAverage}
-            machineScore={machineRating}
-          />
+          {video.totalRatings > 0 && (
+            <SpiceRating 
+              value={averageSpiceLevel} 
+              readonly 
+              size="sm" 
+              userScore={userRatingAverage}
+              machineScore={machineRating}
+            />
+          )}
         </div>
 
         <p className="video-description">{video.description}</p>

@@ -236,19 +236,6 @@ const VideoDetails: React.FC = () => {
               </div>
             </div>
             
-            {/* Panopto Link */}
-            <div className="external-links">
-              <a 
-                href={getPanoptoUrl()} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="panopto-link"
-              >
-                <ArrowTopRightOnSquareIcon className="icon" />
-                View on Panopto
-              </a>
-            </div>
-
             {/* Description */}
             <div className="video-description">
               <h3>Description</h3>

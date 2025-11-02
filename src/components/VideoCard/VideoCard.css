@@ -8,6 +8,25 @@
   overflow: hidden;
   transition: all 0.3s ease;
   height: 100%;
+  position: relative;
+}
+
+.dashboard-video-card::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.dashboard-video-card .card-content {
+  position: relative;
+  z-index: 2;
 }
 
 /* Spice level glow effects */
@@ -66,6 +85,25 @@
   width: 100%;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
+  position: relative;
+}
+
+.detail-video-card::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.detail-video-card > * {
+  position: relative;
+  z-index: 2;
 }
 
 .detail-video-card:hover {
@@ -151,6 +189,15 @@
   flex-grow: 1;
   display: flex;
   flex-direction: column;
+  background: linear-gradient(to bottom, 
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.7) 30%,
+    rgba(0, 0, 0, 0.85) 100%
+  );
+  border-radius: 0 0 12px 12px;
+  margin-top: -80px;
+  position: relative;
+  z-index: 1;
 }
 
 .dashboard-video-card .title-row {
@@ -190,6 +237,10 @@
   flex-direction: column;
   flex-grow: 1;
   gap: 12px;
+  background: linear-gradient(to right, 
+    rgba(0, 0, 0, 0.85) 0%,
+    rgba(0, 0, 0, 0.7) 100%
+  );
 }
 
 .detail-video-card .header-row {

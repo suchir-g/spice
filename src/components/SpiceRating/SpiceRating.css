@@ -4,6 +4,16 @@
   align-items: center;
   gap: 0.5rem;
   position: relative;
+  background: rgba(220, 38, 38, 0.15);
+  padding: 0.5rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(220, 38, 38, 0.1),
+    inset 0 1px 2px rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .score-tooltip {
@@ -93,6 +103,7 @@
 .pepper-sm {
   font-size: 0.75rem;
   padding: 0.125rem;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
 }
 
 .pepper-md {

@@ -1,9 +1,8 @@
 /* VideoDetails.css */
 .video-details {
   min-height: 100vh;
-  background: #000000;
   color: white;
-  padding: 2rem;
+  padding: 1rem 2rem;
 }
 
 .video-details.loading,
@@ -148,36 +147,6 @@
   font-family: monospace;
   font-size: 0.875rem;
   margin-top: 0.5rem;
-}
-
-/* External Links */
-.external-links {
-  margin-bottom: 1.5rem;
-}
-
-.panopto-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: var(--primary-15);
-  color: var(--primary);
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  border: 1px solid var(--primary-30);
-  text-decoration: none;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-.panopto-link:hover {
-  background: var(--primary-20);
-  border-color: var(--primary-40);
-  transform: translateY(-1px);
-}
-
-.panopto-link .icon {
-  width: 1rem;
-  height: 1rem;
 }
 
 /* Description */
